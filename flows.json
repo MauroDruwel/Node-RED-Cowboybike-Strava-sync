@@ -1,0 +1,1187 @@
+[
+    {
+        "id": "e0885b3b1dcd7ea8",
+        "type": "tab",
+        "label": "Cowboy Strava Sync",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "490669104eafe77a",
+        "type": "comment",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Login Cowboy",
+        "info": "",
+        "x": 130,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "d42eac637dd06191",
+        "type": "inject",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "900",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "4",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 240,
+        "wires": [
+            [
+                "f0c5e044dc95cc2e"
+            ]
+        ]
+    },
+    {
+        "id": "8b1583cfaf159b0c",
+        "type": "http request",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://app-api.cowboy.bike/auth/sign_in",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 490,
+        "y": 240,
+        "wires": [
+            [
+                "195161bc88f2b360",
+                "84e94069e44d85da"
+            ]
+        ]
+    },
+    {
+        "id": "f0c5e044dc95cc2e",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "query prep",
+        "func": "// Set headers and body to login on the Cowboy API\nvar Auth = flow.get(\"Cowboy-Auth\");\nmsg.headers = {\n                \"Content-Type\": \"application/json;charset=utf-8\",\n                \"X-Cowboy-App-Token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\",\n                \"Client-Type\": \"Android-App\",\n                \"Client\": \"Android-App\"\n            }   \nmsg.payload = {\"email\": Auth.email, \"password\": Auth.password};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 240,
+        "wires": [
+            [
+                "8b1583cfaf159b0c"
+            ]
+        ]
+    },
+    {
+        "id": "4033eecdb25b9a9c",
+        "type": "comment",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Set credentials",
+        "info": "",
+        "x": 140,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "84e94069e44d85da",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "195161bc88f2b360",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Save the required Cowboy Information",
+        "func": "// Only save the required information\nvar Uid = msg.headers.uid;\nvar Access_Token = msg.headers[\"access-token\"];\nvar Client = msg.headers.client;\nvar Expiry = msg.headers.expiry;\nvar Auth = {\n    \"Uid\": Uid,\n    \"Access-Token\": Access_Token,\n    \"Client\": Client,\n    \"Expiry\": parseInt(Expiry)\n}\nflow.set(\"Cowboy-Auth\", Auth);\nmsg.payload = flow.get(\"Cowboy-Auth\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 240,
+        "wires": [
+            [
+                "331a51c9ca848eb9"
+            ]
+        ]
+    },
+    {
+        "id": "331a51c9ca848eb9",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "7ef9b7c29129965d",
+        "type": "comment",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Login Strava",
+        "info": "",
+        "x": 130,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "825742fcd096cf37",
+        "type": "http request",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://www.strava.com/api/v3/oauth/token",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 490,
+        "y": 420,
+        "wires": [
+            [
+                "fb2ec13fcbbee79c",
+                "3d0bdf55b4fa97a6"
+            ]
+        ]
+    },
+    {
+        "id": "70e4afa2fea38c4b",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "query prep",
+        "func": "// Set headers and body to login on the Strava API\nvar Auth = flow.get(\"Strava-Auth\");\nvar Token = flow.get(\"Strava-Token\");\nmsg.payload = {\n    \"client_id\": Auth.client_id,\n    \"client_secret\": Auth.client_secret,\n    \"grant_type\": \"refresh_token\",\n    \"refresh_token\": Token.refresh_token\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 420,
+        "wires": [
+            [
+                "825742fcd096cf37"
+            ]
+        ]
+    },
+    {
+        "id": "fb2ec13fcbbee79c",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "b2fbce93feee1ba5",
+        "type": "inject",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 80,
+        "wires": [
+            [
+                "cf8a06bcfabd4fcb",
+                "5dec1f0137660c22"
+            ]
+        ]
+    },
+    {
+        "id": "cf8a06bcfabd4fcb",
+        "type": "file in",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Strava-Info.json -- CHANGE FILE LOCATION",
+        "filename": "/home/pi/CowboyMauro/Strava-Info.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 430,
+        "y": 60,
+        "wires": [
+            [
+                "5a550daceaca4556"
+            ]
+        ]
+    },
+    {
+        "id": "5a550daceaca4556",
+        "type": "json",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 710,
+        "y": 60,
+        "wires": [
+            [
+                "c1287ed17069de48",
+                "5db05eec119c3f9f"
+            ]
+        ]
+    },
+    {
+        "id": "5dec1f0137660c22",
+        "type": "file in",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Cowboy-Info.json -- CHANGE FILE LOCATION",
+        "filename": "/home/pi/CowboyMauro/Cowboy-Info.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 440,
+        "y": 100,
+        "wires": [
+            [
+                "dde33c81d6637ce7"
+            ]
+        ]
+    },
+    {
+        "id": "dde33c81d6637ce7",
+        "type": "json",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 710,
+        "y": 100,
+        "wires": [
+            [
+                "bbc9120ad082dfbc",
+                "89eca8284c0fe6c0"
+            ]
+        ]
+    },
+    {
+        "id": "c1287ed17069de48",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "89eca8284c0fe6c0",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "bbc9120ad082dfbc",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Save Cowboy Auth",
+        "func": "flow.set(\"Cowboy-Auth\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5db05eec119c3f9f",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Save Strava Auth",
+        "func": "flow.set(\"Strava-Auth\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "944ec01f5c4c6646",
+        "type": "inject",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "900",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "6",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 380,
+        "wires": [
+            [
+                "acfc412126c26e99"
+            ]
+        ]
+    },
+    {
+        "id": "acfc412126c26e99",
+        "type": "file in",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Strava-Token.json -- CHANGE FILE LOCATION",
+        "filename": "/home/pi/CowboyMauro/Strava-Token.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 440,
+        "y": 380,
+        "wires": [
+            [
+                "4bf0448d30a05da1"
+            ]
+        ]
+    },
+    {
+        "id": "4bf0448d30a05da1",
+        "type": "json",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 710,
+        "y": 380,
+        "wires": [
+            [
+                "c4007002c7fa57c4",
+                "1eb0ae64c1f9d19b"
+            ]
+        ]
+    },
+    {
+        "id": "c4007002c7fa57c4",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Save Strava Token",
+        "func": "flow.set(\"Strava-Token\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 380,
+        "wires": [
+            [
+                "70e4afa2fea38c4b"
+            ]
+        ]
+    },
+    {
+        "id": "1eb0ae64c1f9d19b",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 850,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "3d0bdf55b4fa97a6",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Save Strava access token",
+        "func": "// Only save the access token\nflow.set(\"Strava-Access_Token\", msg.payload.access_token);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d15b44dce7d088d8",
+        "type": "inject",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "props": [
+            {
+                "p": "page",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "repeat": "7200",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 110,
+        "y": 520,
+        "wires": [
+            [
+                "05bb8acec079c116"
+            ]
+        ]
+    },
+    {
+        "id": "5a4c77072a6111cf",
+        "type": "comment",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Sync",
+        "info": "",
+        "x": 110,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "05bb8acec079c116",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "query prep",
+        "func": "// Get all Cowboy activities of the last seven days\nvar auth = flow.get(\"Cowboy-Auth\");\nvar end_date = new Date();\nend_date.setDate(end_date.getDate() + 1);\nend_date = end_date.getFullYear().toString() + \"-\" + (\"0\" + (end_date.getMonth() + 1).toString()).slice(-2) + \"-\" + (\"0\" + end_date.getDate().toString()).slice(-2) + \" 00:00:00\";\nvar start_date = new Date(end_date);\nstart_date.setDate(start_date.getDate() - 7); // Here you can change the number of days\nstart_date = start_date.getFullYear().toString() + \"-\" + (\"0\" + (start_date.getMonth() + 1).toString()).slice(-2) + \"-\" + (\"0\" + start_date.getDate().toString()).slice(-2) + \" 00:00:00\";\nstart_date = start_date.replace(\" \",\"T\");\nend_date = end_date.replace(\" \", \"T\");\nmsg.payload = {\n    \"page\": msg.page,\n    \"from\": start_date.toString(),\n    \"to\": end_date.toString()\n};\nvar Client = auth.Client;\nvar Uid = auth.Uid;\nvar Access_Token = auth[\"Access-Token\"];\nmsg.headers = {\n                \"Content-Type\": \"application/json\",\n                \"X-Cowboy-App-Token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\",\n                \"Client-Type\": \"Android-App\",\n                \"Client\": Client,\n                \"Uid\": Uid,\n                \"Access-Token\": Access_Token\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 520,
+        "wires": [
+            [
+                "55b969b9cda4479e"
+            ]
+        ]
+    },
+    {
+        "id": "66de0ceb9b8e6ced",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2550,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "55b969b9cda4479e",
+        "type": "http request",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "body",
+        "url": "https://app-api.cowboy.bike/trips",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 470,
+        "y": 520,
+        "wires": [
+            [
+                "aad23c0f6063299f"
+            ]
+        ]
+    },
+    {
+        "id": "aad23c0f6063299f",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Process data",
+        "func": "// If the number of days is more than seven, Cowboy will split the data into pages. This script loops the HTTP request and will merge all the data.\nif(msg.payload.last_page == false){\n    if(msg.page == 1){\n        flow.set(\"trips_history\",JSON.stringify(msg.payload.daily_summaries));\n    }\n    else{\n        var trips_history = JSON.parse(flow.get(\"trips_history\"));\n        var currentTrips = msg.payload.daily_summaries;\n        var mergedObject = {\n                    ...trips_history,\n                    ...currentTrips\n        };\n        flow.set(\"trips_history\", JSON.stringify(mergedObject));\n    }\n    msg.send_again = \"true\";\n    msg.page++;\n}\nif(msg.payload.last_page == true){\n    msg.send_again = \"false\";\n    if(msg.page == 1){\n        var data = msg.payload.daily_summaries;\n    }\n    else{\n        var data = JSON.parse(flow.get(\"trips_history\"));\n    }\n    var trips = '{\"cowboyTrips\":[]}';\n    var objTrips = JSON.parse(trips);\n    for(var i in data){\n        for (j = 0; j < data[i].trips.length; j++){\n            objTrips[\"cowboyTrips\"].push({id: data[i].trips[j].id, has_dashboard_data: data[i].trips[j].has_dashboard_data, started_at: data[i].trips[j].started_at, title: data[i].trips[j].title, unlocked_time: data[i].trips[j].unlocked_time, distance: data[i].trips[j].distance, average_motor_power: data[i].trips[j].average_motor_power, average_user_power: data[i].trips[j].average_user_power, elapsed_time: data[i].trips[j].moving_time});\n        }\n    }\n    \n    msg.trips = objTrips;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 520,
+        "wires": [
+            [
+                "8318f5fea77139f3",
+                "a22da3f9a9e16cdd",
+                "11930f633c4684a9"
+            ]
+        ]
+    },
+    {
+        "id": "354f43127bdf24c3",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2430,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "8318f5fea77139f3",
+        "type": "switch",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "property": "send_again",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 790,
+        "y": 480,
+        "wires": [
+            [
+                "05bb8acec079c116"
+            ]
+        ]
+    },
+    {
+        "id": "a22da3f9a9e16cdd",
+        "type": "switch",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "property": "trips",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 790,
+        "y": 560,
+        "wires": [
+            [
+                "4a739d39235a4363"
+            ]
+        ]
+    },
+    {
+        "id": "4a739d39235a4363",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Get all trips that need processed",
+        "func": "// Check if a trip is already uploaded in the past\nvar done_trips = flow.get(\"done_trips\") || [];\nvar trips = msg.trips.cowboyTrips;\nfor (i = 0; i < done_trips.length; i++){\n    for (var j in trips){\n        if(trips[j].id == done_trips[i]){\n            trips.splice(j,1);\n        }\n    }\n}\nmsg.trips = trips;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 990,
+        "y": 560,
+        "wires": [
+            [
+                "281a6e06a73eac84"
+            ]
+        ]
+    },
+    {
+        "id": "22e124beb650c268",
+        "type": "inject",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Activities",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 120,
+        "y": 600,
+        "wires": [
+            [
+                "ddc7892cd2bcbda4"
+            ]
+        ]
+    },
+    {
+        "id": "e5d9823f7acbc937",
+        "type": "change",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "done_trips",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 790,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ddc7892cd2bcbda4",
+        "type": "file in",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "done_trips.txt -- CHANGE FILE LOCATION",
+        "filename": "/home/pi/CowboyMauro/done_trips.txt",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 380,
+        "y": 600,
+        "wires": [
+            [
+                "2ad5dd77b9c7225d"
+            ]
+        ]
+    },
+    {
+        "id": "2ad5dd77b9c7225d",
+        "type": "json",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 620,
+        "y": 600,
+        "wires": [
+            [
+                "e5d9823f7acbc937"
+            ]
+        ]
+    },
+    {
+        "id": "281a6e06a73eac84",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Process trips - query prep",
+        "func": "// Get all the data from one trip including GPS data\nvar auth = flow.get(\"Cowboy-Auth\");\nvar trips = msg.trips;\nvar Client = auth.Client;\nvar Uid = auth.Uid;\nvar Access_Token = auth[\"Access-Token\"];\nfor (var i in trips){\n    if(trips[i].has_dashboard_data == true){\n        msg.url = \"https://app-api.cowboy.bike/trips/\" + trips[i].id.toString() + \"/charts\";\n        msg.headers = msg.headers = {\n                                        \"Content-Type\": \"application/json\",\n                                        \"X-Cowboy-App-Token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\",\n                                        \"Client-Type\": \"Android-App\",\n                                        \"Client\": Client,\n                                        \"Uid\": Uid,\n                                        \"Access-Token\": Access_Token\n                                    };\n        msg.trip = trips[i];\n        node.send(msg);\n    }\n}\n//return msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 560,
+        "wires": [
+            [
+                "38af137ecc071262"
+            ]
+        ]
+    },
+    {
+        "id": "b2b3b6f858de5e33",
+        "type": "http request",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 1610,
+        "y": 560,
+        "wires": [
+            [
+                "1901ba554ffdbe28"
+            ]
+        ]
+    },
+    {
+        "id": "42aea7e41ddac723",
+        "type": "exec",
+        "z": "e0885b3b1dcd7ea8",
+        "command": "python3 /home/pi/CowboyMauro/tcx.py",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "python3 tcx.py -- CHANGE FILE LOCATION",
+        "x": 2670,
+        "y": 420,
+        "wires": [
+            [
+                "f731760dcade7698"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "ec072f70149db1c3",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": " GPS DATA -> Prepare for GPS process -- CHANGE FILE LOCATION",
+        "func": "// Save the data in a file that the Python script wil read from\nvar trip = msg.trip;\nvar chart = msg.payload;\nmsg.file = JSON.stringify(chart);\nmsg.filename = \"/home/pi/CowboyMauro/\" /* <--- CHANGE THIS PATH */ + trip.id.toString() + \".txt\";\nmsg.payload = \"-i '\" + JSON.stringify(trip) + \"' -o '\" + msg.filename + \"'\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2070,
+        "y": 480,
+        "wires": [
+            [
+                "921dc802e3fe97f0",
+                "48add19547aa00c9"
+            ]
+        ]
+    },
+    {
+        "id": "921dc802e3fe97f0",
+        "type": "delay",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2410,
+        "y": 440,
+        "wires": [
+            [
+                "42aea7e41ddac723",
+                "66de0ceb9b8e6ced"
+            ]
+        ]
+    },
+    {
+        "id": "1901ba554ffdbe28",
+        "type": "switch",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "200",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "500",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1750,
+        "y": 560,
+        "wires": [
+            [
+                "ec072f70149db1c3"
+            ],
+            [
+                "77f76f895e49f4c5"
+            ]
+        ]
+    },
+    {
+        "id": "48add19547aa00c9",
+        "type": "change",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "file",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2420,
+        "y": 520,
+        "wires": [
+            [
+                "4c942a031d7f4fd8"
+            ]
+        ]
+    },
+    {
+        "id": "4c942a031d7f4fd8",
+        "type": "file",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "filename": "",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 2580,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2d981debcc01851f",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Prepare to upload to Strava",
+        "func": "var Access_Token = flow.get(\"Strava-Access_Token\");\nmsg.payload = {\n                    \"filename\": msg.filename.replace(\"\\n\",\"\"),\n                    \"title\": msg.trip.title,\n                    \"average_motor_power\": msg.trip.average_motor_power,\n                    \"average_user_power\": msg.trip.average_user_power,\n                    \"access_token\": Access_Token\n                }\nmsg.payload = \"'\" + JSON.stringify(msg.payload) + \"'\"\n// NODE-RED FILE UPLOAD (NOT WORKING) -- MAYBE IN THE FUTURE\n\n/*msg.headers = {\n    \"Authorization\": \"Bearer \" + Access_Token,\n    \"Content-Type\": \"multipart/form-data; boundary=------------------------d74496d66958873e\"\n}\nmsg.url = \"https://www.strava.com/api/v3/uploads?activity_type=ebikeride&name=\" + msg.trip.title + \"&data_type=tcx&description=Average motor power: \" + msg.trip.average_motor_power + \" Average user power: \" + msg.trip.average_user_power;*/\n/*msg.payload = {\n                        \"activity_type\": \"ebikeride\",\n                        \"name\": msg.trip.title,\n                        \"data_type\": \"tcx\",\n                        \"description\": \"Average motor power: \" + msg.trip.average_motor_power + \" Average user power: \" + msg.trip.average_user_power,\n                        \"files\": msg.payload\n                    }*/\n                    \n/*msg.payload = '--------------------------d74496d66958873e\\r\\n'+\n'Content-Disposition: form-data; name=\"select\"\\r\\n'+\n'\\r\\n'+\n'true\\r\\n'+\n'--------------------------d74496d66958873e\\r\\n'+\n'Content-Disposition: form-data; name=\"print\"\\r\\n'+\n'\\r\\n'+\n'true\\r\\n'+\n'--------------------------d74496d66958873e\\r\\n'+\n'Content-Disposition: form-data; name=\"file\"; filename=\"'+msg.filename+'\"\\r\\n'+\n'Content-Type: application/octet-stream\\r\\n'+\n'\\r\\n'+\nmsg.payload+'\\r\\n'+\n'--------------------------d74496d66958873e--\\r\\n';*/\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3180,
+        "y": 400,
+        "wires": [
+            [
+                "8f5cb09195ac3df4"
+            ]
+        ]
+    },
+    {
+        "id": "f731760dcade7698",
+        "type": "change",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "filename",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2950,
+        "y": 400,
+        "wires": [
+            [
+                "2d981debcc01851f"
+            ]
+        ]
+    },
+    {
+        "id": "8f5cb09195ac3df4",
+        "type": "exec",
+        "z": "e0885b3b1dcd7ea8",
+        "command": "python3 /home/pi/CowboyMauro/upload-file.py",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "python3 upload-file.py -- CHANGE FILE LOCATION",
+        "x": 3510,
+        "y": 400,
+        "wires": [
+            [
+                "bcdf87fe4d21a6b9"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "bcdf87fe4d21a6b9",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Prepare for file save",
+        "func": "var done_trips = flow.get(\"done_trips\");\ndone_trips.push(msg.trip.id);\nflow.set(\"done_trips\",done_trips);\nmsg.payload = done_trips;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3820,
+        "y": 380,
+        "wires": [
+            [
+                "fc927e5489d797c5"
+            ]
+        ]
+    },
+    {
+        "id": "fc927e5489d797c5",
+        "type": "file",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "done_trips.txt -- CHANGE FILE LOCATION",
+        "filename": "/home/pi/CowboyMauro/done_trips.txt",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 4110,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "77f76f895e49f4c5",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "NO GPS DATA -> Prepare to create simple activity",
+        "func": "// Create simple activity without GPS data\nvar Access_Token = flow.get(\"Strava-Access_Token\");\nvar date = new Date(msg.trip.started_at);\nmsg.date = date;\nmsg.headers = {\n    \"Authorization\": \"Bearer \" + Access_Token\n};\n\nmsg.payload = {\n                    \"name\": msg.trip.title,\n                    \"start_date_local\": date,\n                    \"type\": \"EbikeRide\",\n                    \"elapsed_time\": msg.trip.elapsed_time,\n                    \"description\": \"Average motor power: \" + msg.trip.average_motor_power + \"W\\nAverage user power: \" + msg.trip.average_user_power + \"W\",\n                    \"distance\": Number((msg.trip.distance * 1000).toFixed(3))\n                };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2010,
+        "y": 640,
+        "wires": [
+            [
+                "7c3ad6a21cebf85f"
+            ]
+        ]
+    },
+    {
+        "id": "7c3ad6a21cebf85f",
+        "type": "http request",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://www.strava.com/api/v3/activities",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 2290,
+        "y": 640,
+        "wires": [
+            [
+                "354f43127bdf24c3",
+                "ced907f3b0251162"
+            ]
+        ]
+    },
+    {
+        "id": "ced907f3b0251162",
+        "type": "function",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "Prepare for file save",
+        "func": "// Mark this activity as done\nvar done_trips = flow.get(\"done_trips\");\ndone_trips.push(msg.trip.id);\nflow.set(\"done_trips\",done_trips);\nmsg.payload = done_trips;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2480,
+        "y": 640,
+        "wires": [
+            [
+                "d65b5a95bc2d755b"
+            ]
+        ]
+    },
+    {
+        "id": "d65b5a95bc2d755b",
+        "type": "file",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "done_trips.txt -- CHANGE FILE LOCATION",
+        "filename": "/home/pi/CowboyMauro/done_trips.txt",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 2770,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "11930f633c4684a9",
+        "type": "debug",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "38af137ecc071262",
+        "type": "delay",
+        "z": "e0885b3b1dcd7ea8",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1450,
+        "y": 560,
+        "wires": [
+            [
+                "b2b3b6f858de5e33"
+            ]
+        ]
+    }
+]
