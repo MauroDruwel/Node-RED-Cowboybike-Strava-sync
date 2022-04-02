@@ -1,4 +1,4 @@
-# Node-RED-Cowboybike-strava-sync
+# Node-RED Cowboybike Strava sync
 Okay first of all a big thanks to [Samuel Dumont](https://github.com/samueldumont/) who gave me a foundation for this project.
 
 ## Setup
