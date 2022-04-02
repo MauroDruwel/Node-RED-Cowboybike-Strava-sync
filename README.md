@@ -71,3 +71,7 @@ https://user-images.githubusercontent.com/46003176/161389972-d1cc66bb-9d04-4fb8-
 All you need to do now is for every block that says: CHANGE FILE LOCATION, open that block and change __/home/pi/CowboyMauro__ to the path from the folder that you created at the beginning from this manual.
 
 ### Screenshots
+
+![Screenshot_20220402-192420_Strava](https://user-images.githubusercontent.com/46003176/161394333-b766edd4-161c-4605-9669-79a305581d38.jpg)
+
+![image](https://user-images.githubusercontent.com/46003176/161394084-37f7db0f-0165-4d81-a9b9-56859debf06b.png)
