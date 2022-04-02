@@ -1,52 +1,71 @@
-# cowboybike-strava-sync
+# Node-RED-Cowboybike-strava-sync
+Okay first of all a big thanks to [Samuel Dumont](https://github.com/samueldumont/) who gave me a foundation for this project.
 
-This script will fetch Cowboy Bike trips and upload them to Strava.
-If the extended details provided by the newest Cowboy firmware are present, the activity will display locations as well as power data.
+## Setup
+The first step is to create a folder where you will store all your files.
+ * On Linux it will look something like this __/home/pi/CowboyMauro/__
+ * On Windows it will look something like this C:\Users\mauro\Documents\CowboyMauro\
 
-## Configuration
+After you created this folder, download all the files and extract them in here.
+It will look like this:
 
-Configuration is mostly done through environment variables. 
+### Cowboy Part
+In the __Cowboy-Info.json__ file you just need to write down your Cowboy email and password.
 
-| Variable                              | Description                                                                                                                                 | Default                             |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `COWBOY_USER_EMAIL`                   | Your cowboy account email                                                                                                                   | `None`                              |
-| `COWBOY_USER_PASSWORD`                | Your cowboy account password                                                                                                                | `None`                              |
-| `STRAVA_CLIENT_ID`                    | Your Strava API client ID                                                                                                                   | `None`                              |
-| `STRAVA_CLIENT_SECRET`                | Your Strava API client secret                                                                                                               | `None`                              |
-| `STRAVA_SECRET_FILE_LOCATION`         | The location of your strava token                                                                                                           | `~/.cowboybike-strava/strava-token` |
-| `STRAVA_INITIAL_SECRET_FILE_LOCATION` | The location of your source strava token (this is used for Docker+Kubernetes deployments, since the file is not easily passed at first run) | `None`                              |
-| `COWBOY_SECRET_FILE_LOCATION`         | The location of your cowboy token                                                                                                           | `~/.cowboybike-strava/cowboy-token` |
-| `PERSISTENCE_LOCATION`                | The directory where cache will persist                                                                                                      | `~/.cowboybike-strava/`             |
-| `COWBOY_TRIPS_DAYS`                   | The number of days to fetch                                                                                                                 | `7`                                 |
-| `WATTS_FILTER`                        | The maximum watt power that will be considered valid                                                                                        | `1100`                              |
-| `LOG_LEVEL`                           | The logging level                                                                                                                           | `INFO`                              |
-| `TCX_EXPORT_DIRECTORY`                | If set, the directory where TCX files will be saved                                                                                         | `None`                              |
-| `UPLOAD_TO_STRAVA`                    | If true, will upload the generated TCX files to Strava                                                                                      | `True`                              |
+### Strava Part
+First you need to create a Strava application.
+This is how you do it:
 
-Two files are required for authentication, they will be used to store your access and refresh tokens for Strava API and Cowboy.
+https://user-images.githubusercontent.com/46003176/161383875-9528904f-6027-4826-9a69-1d9618ea18e4.mp4
 
-For Cowboy, we can fully generate it with a login to the API. If the file does not exists, it will be created and then reused for subsequent requests.
+Then in the __Strava-Info.json__ file you need to write down your Strava client_id and your client_secret from the application you just created.
 
-For Strava, you need to create an Application following this guide : https://developers.strava.com/docs/authentication/
-Don't forget to add the `activity:write` scope to your token request. When you finish the procedure, the last reply will be a json with this format
+Then open your browser and go to this URL: https://www.strava.com/oauth/authorize?client_id=YOURCLIENTID&redirect_uri=http://localhost&response_type=code&approval_prompt=auto&scope=activity:write,read
 
-```
-{
-  "token_type": "Bearer",
-  "expires_at": 1636631250,
-  "expires_in": 21600,
-  "refresh_token": "XXX",
-  "access_token": "XXX",
-  "athlete": {
-    "id": 44554207,
-    "username": "samueldumont",
-    ...
-  }
-}
-```
+__DONT FORGET TO CHANGE THE CLIENT ID__
 
-Save this file at the `STRAVA_SECRET_FILE_LOCATION`. This will be refreshed if necessary and updated.
+Then click Authorize.
+It will look like this:
 
-## Kubernetes
+![image](https://user-images.githubusercontent.com/46003176/161384592-377337da-6a03-466c-b2d3-605bfdcaca6a.png)
 
-There are some sample kubernetes manifests that will allow you to run this sync as a cronjob. You just need to change the secrets and it will run every 15 minutes.
+Then copy __YOUR__ code in the search balk
+
+![image](https://user-images.githubusercontent.com/46003176/161384660-e580fc74-d53e-4f46-b6e8-32309ac733de.png)
+
+Then open [Postman](https://www.postman.com/downloads/), create a post request to https://www.strava.com/api/v3/oauth/token with these params:
+| Key | Value |
+| ------------- | ------------- |
+| client_id  | ReplaceWithYourClientID  |
+| client_secret  | ReplaceWithYourClientSecret  |
+| code  | ReplaceWithYourCode  |
+| grant_type  | authorization_code  |
+
+It will look like this:
+
+![image](https://user-images.githubusercontent.com/46003176/161385188-bb01875d-ce48-4ee3-9a46-fb59233713c3.png)
+
+Then just click the big blue __SEND__ button.
+
+Then click Save Response, Save to a file:
+
+![Postman](https://user-images.githubusercontent.com/46003176/161385572-731ffc96-75fd-4534-9014-60ccfdb22589.png)
+
+Put it in your folder as __Strava-Token.json__
+
+### Python Part
+Make sure that you have Python 3 installed.
+
+Also make sure that these libraries are installed:
+
+* Lxml
+* Python_dateutil
+* Requests
+
+### Last but not least, the Node-RED Part
+
+To import the Node-RED files, you just do this:
+
+https://user-images.githubusercontent.com/46003176/161389972-d1cc66bb-9d04-4fb8-9d55-1147ee974093.mp4
+
+All you need to do now is for every block that says: CHANGE FILE LOCATION, open that block and change __/home/pi/CowboyMauro__ to the path from the folder that you created at the beginning from this manual.
